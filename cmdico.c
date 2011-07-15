@@ -18,8 +18,10 @@
 char* outfilename = "output.bmp";
 char* infilename  = "icon.ico";
 
+int parseArgs(int argc, char** argv);
 int isPNG(ICONENTRY iconEntry, FILE* icofile);
 int isBMP(ICONENTRY iconEntry, FILE* icofile);
+int getPNGHeader(ICONENTRY iconEntry, FILE* icofile);
 
 int extractBMP(ICONENTRY iconEntry, FILE* icofile);
 int extractPNG(ICONENTRY iconEntry, FILE* icofile);
@@ -28,7 +30,7 @@ int writePNG(BITMAPINFOHEADER infoHeader, png_bytep* bitmap);
 
 int main(int argc, char** argv){
 	char	x;
-	int		iconCount, usr;
+	int		usr;
 	FILE*	icofile;
 	ICONFILEHEADER	icon;
 	ICONENTRY*		iconEntries;
@@ -223,7 +225,6 @@ int getBitmapHeader(ICONENTRY iconEntry, FILE* icofile){
 
 int extractPNG(ICONENTRY iconEntry, FILE* icofile){
 	
-	int x;
 	FILE* outfile;
 	png_byte* buffer;
 	
@@ -268,7 +269,6 @@ int extractPNG(ICONENTRY iconEntry, FILE* icofile){
 int writePNG(BITMAPINFOHEADER infoHeader, png_bytep* bitmap){
 	
 	FILE* outfile;
-	int x;	
 	png_structp	png_ptr;
 	png_infop	info_ptr;
 	

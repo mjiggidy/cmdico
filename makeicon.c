@@ -375,15 +375,15 @@ IMAGEINFO* parseImage(char* infileName){
 		return NULL;
 	}
 
-	if(image->imageBitCount != 32){
+	if(image->imageBitCount < 24){
 		fprintf(stderr, "%s is %i bits, but currently only 32-bit images are supported.\n", image->imageFileName, image->imageBitCount);
 		fclose(infile);
 		free(image);
 		return NULL;
 	}
 
-	if((image->imageWidth == 256) && (image->imageBitCount != 32)){
-		fprintf(stderr, "%s is 256x256, but only %i bits.  256x256 icons must be 32-bit images.\n", image->imageFileName, image->imageBitCount);
+	if((image->imageWidth == 256) && (image->imageBitCount < 24)){
+		fprintf(stderr, "%s is 256x256, but only %i bits.  256x256 icons must be at least 24 bits.\n", image->imageFileName, image->imageBitCount);
 		fclose(infile);
 		free(image);
 		return NULL;
@@ -418,6 +418,7 @@ unsigned long writeIconEntry(IMAGEINFO* image, int index, int total, unsigned lo
 	uint8_t*	buffer, *bufferAnd;
 	uint8_t**	bmp_rows;
 	png_bytep*	png_rows;
+	png_uint_32	png_alpha_padding = 0xff;
 	png_structp png_ptr;
 	png_infop	info_ptr;
 
@@ -425,7 +426,7 @@ unsigned long writeIconEntry(IMAGEINFO* image, int index, int total, unsigned lo
 		offset = sizeof(ICONFILEHEADER) + (sizeof(ICONENTRY) * total);
 
 /*	If 256x256 32-bit PNG, write it directly from infile		*/
-	if((image->imageWidth == 256) && (image->imageType = imagetype_png) && (image->imageBitCount == 32)){
+	if((image->imageWidth == 256) && (image->imageType = imagetype_png) && (image->imageBitCount >= 24)){
 
 		printf("Writing %s directly as 256x256 PNG.\n", image->imageFileName);
 		
@@ -479,6 +480,14 @@ unsigned long writeIconEntry(IMAGEINFO* image, int index, int total, unsigned lo
 		png_init_io(png_ptr, image->imageFile);
 		png_read_info(png_ptr, info_ptr);
 
+
+/*		Prep for output	*/
+		if(png_get_color_type(png_ptr, info_ptr) == PNG_COLOR_TYPE_RGB){
+			printf("Adding opaque alpha\n");
+			png_set_filler(png_ptr, 0xff, PNG_FILLER_AFTER);
+			image->imageBitCount = 32;		}
+		png_set_bgr(png_ptr);
+
 /*		Allocate memory for PNG rows	*/
 		if(!(png_rows = (png_bytep*)malloc(sizeof(png_bytep) * image->imageHeight))){
 			fprintf(stderr, "Error allocating memory for %s.\n", image->imageFileName);
@@ -486,7 +495,7 @@ unsigned long writeIconEntry(IMAGEINFO* image, int index, int total, unsigned lo
 		}
 
 		for(x=0; x<image->imageHeight; x++){
-			if(!(png_rows[x] = (png_bytep)malloc(sizeof(png_byte) * png_get_rowbytes(png_ptr, info_ptr)))){
+			if(!(png_rows[x] = (png_bytep)malloc(sizeof(png_byte) * image->imageWidth * sizeof(RGBQUAD)))){
 				fprintf(stderr, "Error allocating memory for %s.\n", image->imageFileName);
 				free(png_rows);
 				return 0;
@@ -502,7 +511,7 @@ unsigned long writeIconEntry(IMAGEINFO* image, int index, int total, unsigned lo
 			return false;
 		}
 
-		png_set_bgr(png_ptr);
+/*		Read PNG in to buffer	*/
 		png_read_image(png_ptr, png_rows);
 
 		png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
@@ -538,7 +547,6 @@ unsigned long writeIconEntry(IMAGEINFO* image, int index, int total, unsigned lo
 	}	
 
 /*	Adjust BITMAPINFO					*/
-
 	sizeAnd = (((image->imageWidth + 31)>>5)<<2) * image->imageHeight;
 	
 	infoHeader.biSize 			= sizeof(BITMAPINFOHEADER);
