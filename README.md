@@ -1,5 +1,5 @@
 ### cmdico
-`cmdico` is a cross-platform command line utility for Windows Icon (.ico) files.
+`cmdico` is a cross-platform command line utility, written in C, for working with Windows Icon (.ico) files.
 Icons can be *written* from one or more image files, and image files can be *extracted* from icon files.
 
 ### Dependencies
