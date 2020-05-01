@@ -1,18 +1,17 @@
 /*	-----																	*
- *	DATATYPES.H by Michael Jordan											*
- *	Contains typedefs for data structures used, including:								*
- *																			*
- *		ICONFILEHEADER		ICO file header									*
- *		ICONENTRY			Metadata for a specific icon entry					*
- *		BITMAPMAGICHEADER	BMP magic number 								*
- *		BITMAPFILEHEADER	BMP file header									*
- *		BITMAPINFOHEADER	BMP metadata									*
- *		RGBQUAD				Uncompressed palette color or 32bit pixel				*
- *																			*
- *	Perhaps more to come later.  For maximum nice-looking-ness,	set tabs					*
- *	to four spaces.													*
- *	Created 05/17/2011		Last Update 05/22/2011								*
- *	-----																	*/
+ *	DATATYPES.H by Michael Jordan									*
+ *	Contains typedefs for data structures used, including:						*
+ *													*						*
+ *		ICONFILEHEADER		ICO file header							*
+ *		ICONENTRY		Metadata for a specific icon entry				*
+ *		BITMAPMAGICHEADER	BMP magic number 						*
+ *		BITMAPFILEHEADER	BMP file header							*
+ *		BITMAPINFOHEADER	BMP metadata							*
+ *		RGBQUAD			Uncompressed palette color or 32bit pixel			*
+ *													*						*
+ *	Perhaps more to come later.  For maximum nice-looking-ness, set tabs to four spaces.		*
+ *	Created 05/17/2011		Last Update 05/22/2011						*
+ *	-----												*/
 
 #ifndef _STDINT_H
 #include <stdint.h>
@@ -81,8 +80,8 @@ typedef struct imgINFO{
 	IMAGETYPE	imageType;			/*	Enum for bmp or png			*/
 	FILE*		imageFile;			/*	File handle for input file		*/
 	char*		imageFileName;			/*	File name string			*/
-	int			imageWidth;
-	int			imageHeight;
+	int		imageWidth;
+	int		imageHeight;
 	char		imageBitCount;
 /*	ICONENTRY	iconEntry;			/*						*/
 } IMAGEINFO;
