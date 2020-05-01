@@ -11,3 +11,5 @@ Icons can be *written* from one or more image files, and image files can be *ext
 `cmdico` can be compiled with the following command, using `gcc` as an example:
 
 `gcc cmdico.c -lpng -lz -o cmdico.exe`
+
+![See? It works, I swear.](images/cmdico.png)
